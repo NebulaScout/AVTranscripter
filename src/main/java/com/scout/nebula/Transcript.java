@@ -1,10 +1,12 @@
-package com.scout.nebula;
+/*
+* This class contains the uploaded media data that will help in obtaining the transcript for the specified file.
+*/
 
+package com.scout.nebula;
 
 import lombok.Getter;
 import lombok.Setter;
 
-// TODO: Fix lombok issues
 @Getter
 @Setter
 public class Transcript {
@@ -12,37 +14,4 @@ public class Transcript {
     private  String id;
     private  String status;
     private  String text;
-
-//    public String getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(String status) {
-//        this.status = status;
-//    }
-//
-//    public String getText() {
-//        return text;
-//    }
-//
-//    public void setText(String text) {
-//        this.text = text;
-//    }
-//
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setId(String id) {
-//        this.id = id;
-//    }
-//
-//    public String getAudio_url() {
-//        return audio_url;
-//    }
-//
-//    public void setAudio_url(String audio_url) {
-//        this.audio_url = audio_url;
-//    }
-
 }

@@ -10,42 +10,48 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-//private static final String baseURL = "https://api.assemblyai.com";
-//private static final String transcribeEndpoint = baseURL + "/v2/transcript";
-//private final String serviceURL = "https://api.assemblyai.com/v2/transcript";
-
 public class Transcriber {
 
     private static final String serviceURL = "https://api.assemblyai.com/v2/transcript";
-    HttpClient httpClient = HttpClient.newHttpClient();
+    private HttpClient httpClient = HttpClient.newHttpClient();
+    private Transcript transcript = new Transcript();
+    private Gson gson = new Gson();
+    private ConfigUtil configUtil = new ConfigUtil();
 
     public Transcriber() throws URISyntaxException, IOException, InterruptedException{
-        ConfigUtil configUtil = new ConfigUtil();
 
-        Transcript transcript = new Transcript();
-        transcript.setAudio_url("https://cdn.assemblyai.com/upload/b3feb041-0ad2-48e9-ba92-6a568f99cb48");
-        Gson gson = new Gson();
+        transcript.setAudio_url("https://cdn.assemblyai.com/upload/9c99915f-5583-48e1-b017-3681cb74b041");
         String jsonRequest = gson.toJson(transcript);
 
-//        System.out.println(jsonRequest);
-
-//        HttpRequest postRequest = HttpRequest.newBuilder()
-//                .uri(new URI("https://api.assemblyai.com/v2/transcript"))
-//                .header("Authorization", configUtil.getApiKey())
-//                .POST(HttpRequest.BodyPublishers.ofString(jsonRequest))
-//                .build();
-//
-//        HttpClient httpClient = HttpClient.newHttpClient();
-//        HttpResponse<String> postResponse = httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
-        // TODO: Finish up deluttering the code for better readability and maintainability
-        HttpResponse<String> postResponse = sendPostRequest(configUtil, jsonRequest);
-//        System.out.println(postResponse.body());
+        // TODO: Finish up decluttering the code for better readability and maintainability
+        HttpResponse<String> postResponse = sendPostRequest( jsonRequest);
         transcript = gson.fromJson(postResponse.body(), Transcript.class);
 
         System.out.println(transcript.getId());
 
+        sendGetRequest(transcript.getId());
+
+// TODO: Add a method for uploading a file to AssemblyAI servers for convertion as the URI needs to start with https
+//  or maybe figure out if i can work with a file
+
+        System.out.println("Transcription Completed");
+        System.out.println(transcript.getText());
+
+    }
+
+    private HttpResponse<String> sendPostRequest(String json) throws URISyntaxException, IOException, InterruptedException {
+        HttpRequest postRequest = HttpRequest.newBuilder()
+                .uri(new URI(serviceURL))
+                .header("Authorization", configUtil.getApiKey())
+                .POST(HttpRequest.BodyPublishers.ofString(json))
+                .build();
+
+        return httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
+    }
+
+    private void sendGetRequest(String id) throws URISyntaxException, IOException, InterruptedException {
         HttpRequest getRequest = HttpRequest.newBuilder()
-                .uri(new URI(serviceURL + "/" + transcript.getId()))
+                .uri(new URI(serviceURL + "/" + id))
                 .header("Authorization", configUtil.getApiKey())
                 .build();
 
@@ -59,27 +65,9 @@ public class Transcriber {
                 break;
             }
 
-            Thread.sleep(1000);
+            Thread.sleep(1500);
         }
-// TODO: Add a method for uploading a file to AssemblyAI servers for convertion as the URI needs to start with https
-//  or maybe figure out if i can work with a file
 
-        System.out.println("Transcription Completed");
-        System.out.println(transcript.getText());
-
-    }
-
-    private HttpResponse<String> sendPostRequest(ConfigUtil configUtil, String json) throws URISyntaxException, IOException, InterruptedException {
-//        return "This is a POST request";
-        HttpRequest postRequest = HttpRequest.newBuilder()
-                .uri(new URI(serviceURL))
-                .header("Authorization", configUtil.getApiKey())
-                .POST(HttpRequest.BodyPublishers.ofString(json))
-                .build();
-
-
-        HttpResponse<String> response = httpClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
-
-        return response;
+        httpClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
     }
 }

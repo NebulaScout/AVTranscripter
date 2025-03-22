@@ -5,14 +5,19 @@
 
 package com.scout.nebula;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 public  class AVTrascripter {
-    public static void main(String[] args) throws URISyntaxException, IOException, InterruptedException {
+
+    private static Exception exceptionCaught;
+
+    public static void main(String[] args)  {
         System.out.println("Transcribing audio file...");
 
-        new Transcriber();
+        try{
+            new Transcriber();
+        } catch(Exception ex) {
+            exceptionCaught = (Exception) ex;
+            System.out.println("An error occurred: " + exceptionCaught.getMessage());
+        }
 
     }
 }
